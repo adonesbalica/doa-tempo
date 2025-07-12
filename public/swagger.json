@@ -1,0 +1,33 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Swagger API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/test": {
+      "get": {
+        "summary": "Test GET endpoint",
+        "operationId": "test",
+        "responses": {
+          "200": {
+            "description": "Test Get Endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "example": "Jane Doe"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
