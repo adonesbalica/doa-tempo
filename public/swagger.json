@@ -4,14 +4,23 @@
     "title": "Swagger API",
     "version": "1.0.0"
   },
+  "tags": [
+    {
+      "name": "Status",
+      "desciption": "API verification status"
+    }
+  ],
   "paths": {
-    "/api/test": {
+    "/api/ping": {
       "get": {
-        "summary": "Test GET endpoint",
+        "tags": [
+          "Status"
+        ],
+        "summary": "Api status",
         "operationId": "test",
         "responses": {
           "200": {
-            "description": "Test Get Endpoint",
+            "description": "Api ping",
             "content": {
               "application/json": {
                 "schema": {
@@ -19,7 +28,7 @@
                   "properties": {
                     "name": {
                       "type": "string",
-                      "example": "Jane Doe"
+                      "example": "pong"
                     }
                   }
                 }
