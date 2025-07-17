@@ -11,7 +11,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    const { name, description, photos } = body
+    const { name, description, city, state, tags, contact, photos } = body
 
     if (!name || !description) {
       return NextResponse.json(
@@ -20,10 +20,25 @@ export async function POST(req: Request) {
       )
     }
 
+    const existingOrg = await prisma.organization.findUnique({
+      where: { name },
+    })
+
+    if (existingOrg) {
+      return NextResponse.json(
+        { error: 'An organization with this name already exists.' },
+        { status: 409 }
+      )
+    }
+
     const organization = await prisma.organization.create({
       data: {
         name,
         description,
+        city,
+        state,
+        tags,
+        contact,
         photos: photos || [],
         userId: user.id,
       },

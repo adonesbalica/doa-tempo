@@ -31,10 +31,16 @@ model User {
 
 model Organization {
   id          String   @id @default(uuid())
-  name        String
+  name        String   @unique
   description String
   photos      String[]
+  city        String
+  state       String
+  tags        String[]
+  contact     Json
   created_at  DateTime @default(now())
   userId      String
   user        User     @relation(fields: [userId], references: [id])
+
+  @@map("organization")
 }
