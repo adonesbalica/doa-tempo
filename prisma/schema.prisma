@@ -15,15 +15,26 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  name        String
-  email       String   @unique
-  password    String
-  description String?
-  avatarUrl   String?
-  resumeUrl   String?
-  city        String?
-  created_at  DateTime @default(now())
+  id           String         @id @default(uuid())
+  name         String
+  email        String         @unique
+  password     String
+  description  String?
+  avatarUrl    String?
+  resumeUrl    String?
+  city         String?
+  created_at   DateTime       @default(now())
+  Organization Organization[]
 
   @@map("users")
+}
+
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  photos      String[]
+  created_at  DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
 }

@@ -16,6 +16,7 @@ export async function POST(req: Request) {
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } })
+
     if (existingUser) {
       return NextResponse.json(
         { error: 'Email already in use' },
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json(
-      { message: 'User created', user: newUser },
+      { message: 'User created successfully' },
       { status: 201 }
     )
   } catch (error) {
