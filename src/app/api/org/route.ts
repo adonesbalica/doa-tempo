@@ -2,6 +2,55 @@ import { getUserFromToken } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 
+interface OrganizationFilters {
+  city?: string
+  state?: string
+  tags?: {
+    hasSome: string[]
+  }
+}
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+
+  const state = searchParams.get('state')
+  const city = searchParams.get('city')
+  const tags = searchParams
+    .get('tags')
+    ?.split(',')
+    .map((tag) => tag.trim())
+
+  const filters: OrganizationFilters = {}
+  if (state) filters.state = state
+  if (city) filters.city = city
+  if (tags?.length) filters.tags = { hasSome: tags }
+
+  try {
+    const organizations = await prisma.organization.findMany({
+      where: filters,
+      include: {
+        user: {
+          select: {
+            name: true,
+            city: true,
+            avatarUrl: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    })
+
+    return NextResponse.json({ organizations }, { status: 200 })
+  } catch {
+    return NextResponse.json(
+      { error: 'Internval server error' },
+      { status: 500 }
+    )
+  }
+}
+
 export async function POST(req: Request) {
   const user = getUserFromToken(req)
 

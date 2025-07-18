@@ -7,11 +7,15 @@
   "tags": [
     {
       "name": "Status",
-      "desciption": "API verification status"
+      "description": "API verification status"
     },
     {
       "name": "Authentication",
-      "desciption": "API authentication"
+      "description": "API authentication"
+    },
+    {
+      "name": "Organization",
+      "description": "API organization"
     }
   ],
   "paths": {
@@ -211,6 +215,245 @@
                       "type": "string",
                       "example": "Invalid credentials."
                     }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/org": {
+      "get": {
+        "tags": ["Organization"],
+        "summary": "List organizations",
+        "description": "Fetch a list of organizations, optionally filtered by city, state, or tags.",
+        "operationId": "listOrganizations",
+        "parameters": [
+          {
+            "name": "city",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by city (e.g. 'Fortaleza')"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by state (e.g. 'CE')"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated list of tags (e.g. 'educação,meio ambiente')"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "organizations": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Organization"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Organization"],
+        "summary": "Create organization",
+        "description": "Create a new organization. Requires authentication.",
+        "operationId": "createOrganization",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Organization created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Organization created!"
+                    },
+                    "organization": {
+                      "$ref": "#/components/schemas/Organization"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required fields or duplicate name.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Name and description are required!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Organization": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "photos": {
+            "type": "array",
+            "items": { "type": "string", "format": "uri" }
+          },
+          "city": { "type": "string" },
+          "state": { "type": "string" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "contact": {
+            "type": "object",
+            "properties": {
+              "email": { "type": "string", "format": "email" },
+              "phone": { "type": "string" },
+              "social": {
+                "type": "object",
+                "properties": {
+                  "instagram": { "type": "string", "format": "uri" },
+                  "facebook": { "type": "string", "format": "uri" }
+                }
+              }
+            }
+          },
+          "userId": { "type": "string" }
+        }
+      },
+      "OrganizationInput": {
+        "type": "object",
+        "required": ["name", "description", "city", "state"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Conecta Cidadania"
+          },
+          "description": {
+            "type": "string",
+            "example": "Facilitamos a conexão entre voluntários e iniciativas sociais."
+          },
+          "photos": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "example": ["https://example.com/photo1.jpg"]
+          },
+          "city": {
+            "type": "string",
+            "example": "Fortaleza"
+          },
+          "state": {
+            "type": "string",
+            "example": "CE"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["educação", "meio ambiente"]
+          },
+          "contact": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "example": "contato@exemplo.org"
+              },
+              "phone": {
+                "type": "string",
+                "example": "+55 85 91234-5678"
+              },
+              "social": {
+                "type": "object",
+                "properties": {
+                  "instagram": {
+                    "type": "string",
+                    "example": "https://instagram.com/ong"
+                  },
+                  "facebook": {
+                    "type": "string",
+                    "example": "https://facebook.com/ong"
                   }
                 }
               }
